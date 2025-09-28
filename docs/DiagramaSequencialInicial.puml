@@ -1,0 +1,45 @@
+@startuml
+' Define a ordem dos participantes
+participant Operador
+participant "tela:Interface" as Interface
+participant "controle:ControleMissao" as Controle
+participant "missao:Missao" as Missao
+participant "drone:Drone" as Drone
+
+' Início da sequência
+Operador -> Interface: solicita agendamento de missão
+activate Interface
+
+Interface -> Controle: agendarMissao(dadosDaMissao)
+activate Controle
+
+' Validação de segurança: o drone está disponível e não há conflito de horário?
+Controle -> Controle: validarMissaoSobreposta(drone, dataHora)
+activate Controle
+Controle --> Controle: retorna [semConflito]
+deactivate Controle
+
+alt Missão Válida
+    ' Criação e configuração da missão
+    Controle -> Missao: new(dadosDaMissao)
+    activate Missao
+    Controle -> Missao: setStatus(AGENDADA)
+    Controle -> Drone: setStatus(EM_MISSAO)
+    activate Drone
+    
+    Missao --> Controle: missão criada
+    deactivate Missao
+    Drone --> Controle: status atualizado
+    deactivate Drone
+    
+    Controle --> Interface: missão agendada com sucesso
+    Interface --> Operador: exibe confirmação
+
+else Missão Inválida (conflito de horário)
+    Controle --> Interface: erro: "Conflito de agendamento detectado"
+    Interface --> Operador: exibe mensagem de erro
+end
+
+deactivate Controle
+deactivate Interface
+@enduml
