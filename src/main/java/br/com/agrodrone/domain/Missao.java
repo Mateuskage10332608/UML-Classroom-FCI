@@ -13,29 +13,31 @@ import java.util.List;
  * dados coletados durante o voo.
  */
 public class Missao {
-    private Long id;
+    private int id;
     private LocalDateTime dataHora;
     private StatusMissao status;
     private AreaAgricola area;
     private Drone drone;
-    private Usuario operador;
+    private Operador operador; // Agora associado a um Operador específico
+    private Checklist checklist; // Nova associação com Checklist
     private List<DadosColetados> dados = new ArrayList<>();
 
     public Missao() {}
 
-    public Missao(Long id, LocalDateTime dataHora, StatusMissao status,
-                  AreaAgricola area, Drone drone, Usuario operador) {
+    public Missao(int id, LocalDateTime dataHora, StatusMissao status,
+                  AreaAgricola area, Drone drone, Operador operador, Checklist checklist) {
         this.id = id;
         this.dataHora = dataHora;
         this.status = status;
         this.area = area;
         this.drone = drone;
         this.operador = operador;
+        this.checklist = checklist;
     }
 
     // Getters e setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
     public LocalDateTime getDataHora() { return dataHora; }
     public void setDataHora(LocalDateTime dataHora) { this.dataHora = dataHora; }
     public StatusMissao getStatus() { return status; }
@@ -44,8 +46,10 @@ public class Missao {
     public void setArea(AreaAgricola area) { this.area = area; }
     public Drone getDrone() { return drone; }
     public void setDrone(Drone drone) { this.drone = drone; }
-    public Usuario getOperador() { return operador; }
-    public void setOperador(Usuario operador) { this.operador = operador; }
+    public Operador getOperador() { return operador; }
+    public void setOperador(Operador operador) { this.operador = operador; }
+    public Checklist getChecklist() { return checklist; }
+    public void setChecklist(Checklist checklist) { this.checklist = checklist; }
     public List<DadosColetados> getDados() { return dados; }
     public void setDados(List<DadosColetados> dados) { this.dados = dados; }
 
@@ -57,7 +61,7 @@ public class Missao {
     public void iniciarMissao() {
         this.status = StatusMissao.EM_ANDAMENTO;
         if (this.drone != null) {
-            this.drone.setStatus(StatusDrone.EM_MISSAO);
+            this.drone.atualizarStatus(StatusDrone.EM_MISSAO);
         }
     }
 
@@ -67,7 +71,7 @@ public class Missao {
     public void concluirMissao() {
         this.status = StatusMissao.CONCLUIDA;
         if (this.drone != null) {
-            this.drone.setStatus(StatusDrone.DISPONIVEL);
+            this.drone.atualizarStatus(StatusDrone.DISPONIVEL);
         }
     }
 
@@ -75,9 +79,9 @@ public class Missao {
      * Registra um conjunto de dados coletados durante a missão.
      * @param dadosColetados dados coletados no voo
      */
-    public void registrarDados(DadosColetados dadosColetados) {
+    public void adicionarDados(DadosColetados dadosColetados) {
         if (dadosColetados != null) {
-            dadosColetados.setMissao(this);
+            // dadosColetados.setMissao(this); // Remover se Missao não for um atributo em DadosColetados
             this.dados.add(dadosColetados);
         }
     }

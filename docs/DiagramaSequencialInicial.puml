@@ -1,45 +1,73 @@
 @startuml
-' Define a ordem dos participantes
-participant Operador
-participant "tela:Interface" as Interface
+' Título do Diagrama
+title Diagrama de Sequência - Agendamento de Missão
+
+' Declaração dos Participantes
+actor Operador
+participant "tela:Interface" as Tela
+participant "autenticador:Autenticador" as Auth
 participant "controle:ControleMissao" as Controle
-participant "missao:Missao" as Missao
 participant "drone:Drone" as Drone
+participant "checklist:Checklist" as Checklist
+participant "missao:Missao" as Missao
 
-' Início da sequência
-Operador -> Interface: solicita agendamento de missão
-activate Interface
+' Início do Fluxo
+autonumber "<b>[0]</b>"
 
-Interface -> Controle: agendarMissao(dadosDaMissao)
+== Autenticação ==
+Operador -> Tela: solicitaLogin(login, senha)
+activate Tela
+Tela -> Auth: autenticar(login, senha)
+activate Auth
+Auth --> Tela: retorna usuario:Operador
+deactivate Auth
+Tela --> Operador: exibeLoginComSucesso()
+deactivate Tela
+
+== Agendamento da Missão ==
+Operador -> Tela: solicitaAgendamento(dadosDaMissao)
+activate Tela
+
+Tela -> Controle: agendarMissao(usuario, dadosDaMissao)
 activate Controle
 
-' Validação de segurança: o drone está disponível e não há conflito de horário?
-Controle -> Controle: validarMissaoSobreposta(drone, dataHora)
-activate Controle
-Controle --> Controle: retorna [semConflito]
-deactivate Controle
+note right of Controle: Inicia o processo de validação pré-agendamento.
+
+Controle -> Drone: verificarStatus()
+activate Drone
+Drone --> Controle: retorna StatusDrone.DISPONIVEL
+deactivate Drone
+
+Controle -> Checklist: new(drone)
+Controle -> Checklist: validar()
+activate Checklist
+Checklist --> Controle: retorna "true"
+deactivate Checklist
+
+note right of Controle: Valida se não há conflitos de horário para o drone.
+Controle -> Controle: validarSobreposicao(drone, dataHora)
 
 alt Missão Válida
-    ' Criação e configuração da missão
     Controle -> Missao: new(dadosDaMissao)
     activate Missao
-    Controle -> Missao: setStatus(AGENDADA)
-    Controle -> Drone: setStatus(EM_MISSAO)
-    activate Drone
-    
-    Missao --> Controle: missão criada
-    deactivate Missao
-    Drone --> Controle: status atualizado
-    deactivate Drone
-    
-    Controle --> Interface: missão agendada com sucesso
-    Interface --> Operador: exibe confirmação
+    note left of Missao: Objeto Missao criado em memória.
 
-else Missão Inválida (conflito de horário)
-    Controle --> Interface: erro: "Conflito de agendamento detectado"
-    Interface --> Operador: exibe mensagem de erro
+    Controle -> Missao: setStatus(StatusMissao.AGENDADA)
+    deactivate Missao
+
+    Controle -> Drone: setStatus(StatusDrone.EM_MISSAO)
+    activate Drone
+    deactivate Drone
+
+    Controle --> Tela: retorna "Missão agendada com sucesso!"
+    Tela --> Operador: exibeConfirmacao("Missão agendada!")
+
+else Missão Inválida (checklist falhou ou há conflito)
+    Controle --> Tela: retorna "Erro: Falha na validação ou conflito de horário."
+    Tela --> Operador: exibeMensagemDeErro()
 end
 
 deactivate Controle
-deactivate Interface
+deactivate Tela
+
 @enduml

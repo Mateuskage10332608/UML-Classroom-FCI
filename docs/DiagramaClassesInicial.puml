@@ -1,0 +1,147 @@
+@startuml
+' Definição de um tema para melhor visualização
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #ADD8E6
+    ArrowColor #3B5998
+    BorderColor #3B5998
+}
+skinparam note {
+    BackgroundColor #F0E68C
+    BorderColor #8B4513
+}
+skinparam enum {
+    BackgroundColor #E0FFFF
+    ArrowColor #4682B4
+    BorderColor #4682B4
+}
+
+' =======================================
+' 1. Entidades Centrais e de Apoio
+' =======================================
+
+class Drone {
+  - id: int
+  - modelo: String
+  - status: StatusDrone
+  + verificarStatus(): StatusDrone
+  + atualizarStatus(novoStatus: StatusDrone)
+}
+
+class AreaAgricola {
+  - id: int
+  - localizacao: String
+  - tamanho: double
+  - tipoCultivo: String
+}
+
+class Missao {
+  - id: int
+  - dataHora: LocalDateTime
+  - status: StatusMissao
+  + iniciarMissao()
+  + concluirMissao()
+  + adicionarDados(dados: DadosColetados)
+}
+
+class DadosColetados {
+  - id: int
+  - imagem: byte[]
+  - temperatura: double
+  - umidade: double
+  - pragas: String
+  - dataHora: LocalDateTime
+}
+
+' =======================================
+' 2. Estrutura de Usuários com Herança
+' =======================================
+
+abstract class Usuario {
+  # id: int
+  # nome: String
+  # login: String
+  # senhaHash: String
+  + fazerLogin(autenticador: Autenticador): boolean
+}
+
+note right of Usuario
+  A classe Usuario é abstrata,
+  significando que não podemos criar
+  um "Usuario" genérico, apenas
+  tipos específicos como Operador
+  ou Administrador.
+end note
+
+class Administrador extends Usuario {
+  + cadastrarUsuario(novoUsuario: Usuario)
+  + gerenciarSistema()
+}
+
+class Operador extends Usuario {
+  + agendarMissao(missao: Missao): boolean
+  + consultarMissoes(): List<Missao>
+}
+
+' =======================================
+' 3. Classes de Responsabilidade Única
+' =======================================
+
+class Autenticador {
+  + autenticar(login: String, senha: String): Usuario
+  + gerarTokenSessao(usuario: Usuario): String
+}
+
+note top of Autenticador: Separa a lógica de autenticação da lógica de negócio do usuário.
+
+class Checklist {
+    - nivelBateria: int
+    - sensoresOk: boolean
+    - conexaoRedeOk: boolean
+    + validar(): boolean
+}
+
+note bottom of Checklist: Garante que as pré-condições para uma missão sejam atendidas.
+
+' =======================================
+' 4. Enums para Tipos de Dados
+' =======================================
+
+enum StatusMissao {
+  AGENDADA
+  EM_ANDAMENTO
+  CONCLUIDA
+  CANCELADA
+}
+
+enum StatusDrone {
+  DISPONIVEL
+  EM_MISSAO
+  EM_MANUTENCAO
+}
+
+enum TipoUsuario {
+    ADMINISTRADOR
+    OPERADOR
+}
+
+' =======================================
+' 5. Relacionamentos entre as Classes
+' =======================================
+
+' Relacionamentos de Missão
+Operador "1" -- "0..*" Missao : agenda
+Missao "1" -- "1" AreaAgricola : é para
+Missao "1" -- "1" Drone : é atribuída a
+Missao "1" -- "1" Checklist : requer
+Missao "1" -- "0..*" DadosColetados : coleta
+
+' Relacionamento de Autenticação
+Usuario "1" -- "1" Autenticador : usa
+
+' Relacionamento com Enums
+Missao *-- StatusMissao
+Drone *-- StatusDrone
+Usuario *-- TipoUsuario
+
+@enduml

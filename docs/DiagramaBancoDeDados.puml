@@ -1,71 +1,83 @@
 @startuml
-' Tema opcional
-!theme plain
-skinparam linetype ortho
-hide circle
-hide methods
-hide stereotypes
+' Título do Diagrama
+title Diagrama de Entidade-Relacionamento (DER) - v2.0
 
-' -----------------------
-' Tabelas (entidades)
-' -----------------------
-entity "Usuario" as Usuario {
-  + id : BIGINT <<PK>>
-  --
-  nome       : VARCHAR(255)
-  login      : VARCHAR(120) <<UNIQUE>>
-  senhaHash  : VARCHAR(255)
-  tipo       : VARCHAR(32)
+' Definição de um tema para melhor visualização
+skinparam linetype ortho
+skinparam entity {
+    BackgroundColor LightBlue
+    BorderColor RoyalBlue
 }
 
-entity "AreaAgricola" as AreaAgricola {
-  + id : BIGINT <<PK>>
+' Definição das Entidades (Tabelas)
+
+entity "Usuario" as Usuario {
+  + id: BIGINT <<PK>>
   --
-  tamanho     : DOUBLE
-  localizacao : VARCHAR(255)
-  tipoCultivo : VARCHAR(80)
+  nome: VARCHAR(255)
+  login: VARCHAR(120) <<UNIQUE>>
+  senhaHash: VARCHAR(255)
+  **tipo: VARCHAR(32) <<Discriminador>>**
+}
+note right of Usuario::tipo
+  Esta coluna implementa a herança.
+  Define se o usuário é 'ADMINISTRADOR'
+  ou 'OPERADOR'.
+end note
+
+entity "AreaAgricola" as Area {
+  + id: BIGINT <<PK>>
+  --
+  localizacao: VARCHAR(255)
+  tamanho: DOUBLE
+  tipoCultivo: VARCHAR(80)
 }
 
 entity "Drone" as Drone {
-  + id : BIGINT <<PK>>
+  + id: BIGINT <<PK>>
   --
-  modelo : VARCHAR(120)
-  status : VARCHAR(32)
+  modelo: VARCHAR(120)
+  status: VARCHAR(32)
+}
+
+entity "Checklist" as Checklist {
+  + id: BIGINT <<PK>>
+  --
+  nivelBateria: INT
+  sensoresOk: BOOLEAN
+  conexaoRedeOk: BOOLEAN
+  dataValidacao: TIMESTAMP
 }
 
 entity "Missao" as Missao {
-  + id : BIGINT <<PK>>
+  + id: BIGINT <<PK>>
   --
-  dataHora    : TIMESTAMP
-  area_id     : BIGINT <<FK>>
-  drone_id    : BIGINT <<FK>>
-  operador_id : BIGINT <<FK>>
-  status      : VARCHAR(32)
+  dataHora: TIMESTAMP
+  status: VARCHAR(32)
+  --
+  # id_area: BIGINT <<FK>>
+  # id_drone: BIGINT <<FK>>
+  # id_operador: BIGINT <<FK>>
+  # id_checklist: BIGINT <<FK>> <<UNIQUE>>
 }
 
-entity "DadosColetados" as DadosColetados {
-  + id : BIGINT <<PK>>
+entity "DadosColetados" as Dados {
+  + id: BIGINT <<PK>>
   --
-  imagem    : BYTEA
-  temperatura : DOUBLE
-  umidade     : DOUBLE
-  dataHora    : TIMESTAMP
-  missao_id   : BIGINT <<FK>>
-  pragas      : VARCHAR(255)
+  imagem: BYTEA
+  temperatura: DOUBLE PRECISION
+  umidade: DOUBLE PRECISION
+  dataHora: TIMESTAMP
+  --
+  # id_missao: BIGINT <<FK>>
 }
 
-' -----------------------
-' Relacionamentos
-' -----------------------
-' 1 Usuario (operador) -> N Missoes
-Usuario ||--o{ Missao : "operador_id"
+' Definição dos Relacionamentos
 
-' 1 AreaAgricola -> N Missoes
-AreaAgricola ||--o{ Missao : "area_id"
+Usuario ||--o{ Missao : "operador"
+Area ||--o{ Missao : "área"
+Drone ||--o{ Missao : "drone"
+Checklist ||..o| Missao : "checklist"
+Missao ||--o{ Dados : "missão"
 
-' 1 Drone -> N Missoes
-Drone ||--o{ Missao : "drone_id"
-
-' 1 Missao -> N DadosColetados
-Missao ||--o{ DadosColetados : "missao_id"
 @enduml
