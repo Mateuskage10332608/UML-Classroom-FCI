@@ -1,0 +1,71 @@
+@startuml
+' Tema opcional
+!theme plain
+skinparam linetype ortho
+hide circle
+hide methods
+hide stereotypes
+
+' -----------------------
+' Tabelas (entidades)
+' -----------------------
+entity "Usuario" as Usuario {
+  + id : BIGINT <<PK>>
+  --
+  nome       : VARCHAR(255)
+  login      : VARCHAR(120) <<UNIQUE>>
+  senhaHash  : VARCHAR(255)
+  tipo       : VARCHAR(32)
+}
+
+entity "AreaAgricola" as AreaAgricola {
+  + id : BIGINT <<PK>>
+  --
+  tamanho     : DOUBLE
+  localizacao : VARCHAR(255)
+  tipoCultivo : VARCHAR(80)
+}
+
+entity "Drone" as Drone {
+  + id : BIGINT <<PK>>
+  --
+  modelo : VARCHAR(120)
+  status : VARCHAR(32)
+}
+
+entity "Missao" as Missao {
+  + id : BIGINT <<PK>>
+  --
+  dataHora    : TIMESTAMP
+  area_id     : BIGINT <<FK>>
+  drone_id    : BIGINT <<FK>>
+  operador_id : BIGINT <<FK>>
+  status      : VARCHAR(32)
+}
+
+entity "DadosColetados" as DadosColetados {
+  + id : BIGINT <<PK>>
+  --
+  imagem    : BYTEA
+  temperatura : DOUBLE
+  umidade     : DOUBLE
+  dataHora    : TIMESTAMP
+  missao_id   : BIGINT <<FK>>
+  pragas      : VARCHAR(255)
+}
+
+' -----------------------
+' Relacionamentos
+' -----------------------
+' 1 Usuario (operador) -> N Missoes
+Usuario ||--o{ Missao : "operador_id"
+
+' 1 AreaAgricola -> N Missoes
+AreaAgricola ||--o{ Missao : "area_id"
+
+' 1 Drone -> N Missoes
+Drone ||--o{ Missao : "drone_id"
+
+' 1 Missao -> N DadosColetados
+Missao ||--o{ DadosColetados : "missao_id"
+@enduml
