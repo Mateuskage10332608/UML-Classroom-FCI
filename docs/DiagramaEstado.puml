@@ -1,0 +1,36 @@
+@startuml class
+title Diagramas de Estado – Drone e Missão (com Guardas UMLsec)
+
+' --- Máquina de Estados do Drone ---
+state "EstadoDrone" as DS {
+  [*] --> Ocioso
+  Ocioso --> Preparando : missao_recebida [bateria>=min && sensores_ok]
+  Preparando --> Em_Voo : decolagem / marcarEmVoo()
+  Em_Voo --> Retornando : missao_concluida OU bateria_baixa
+  Em_Voo --> Manutencao : falha_critica
+  Retornando --> Pousado : pouso
+  Pousado --> Ocioso : desligamento_completo
+  Manutencao --> Ocioso : manutencao_concluida
+}
+
+note right of Preparando
+  Guarda: bateria >= bateriaMinima 
+          E sensores.autoVerificacao() == verdadeiro
+end note
+
+' --- Máquina de Estados da Missão ---
+state "EstadoMissao" as MS {
+  [*] --> Agendada
+  Agendada --> Em_Execucao : horario_inicio_alcancado [drone_confirmado==true]
+  Em_Execucao --> Completa : tarefas_concluidas / persistirDados()
+  Em_Execucao --> Abortada : aborto_manual OU falha_drone OU timeout
+  Agendada --> Abortada : cancelada_pelo_usuario
+  Abortada --> Agendada : reagendar
+}
+
+note left of MS
+  Estados sensíveis podem usar UMLsec (<<secureState>>), 
+  por exemplo: AdminAutenticado.
+end note
+
+@enduml

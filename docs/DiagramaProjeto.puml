@@ -1,0 +1,126 @@
+@startuml class
+title Diagrama de Projeto - Abstrações, Interfaces e Segurança 
+
+class DummyForBugWorkaround
+
+'==========================
+'  Enumerações
+'==========================
+enum EstadoDrone {
+    DISPONIVEL
+    PREPARANDO
+    EM_VOO
+    RETORNANDO
+    MANUTENCAO
+}
+
+enum EstadoMissao {
+    AGENDADA
+    EM_EXECUCAO
+    COMPLETA
+    ABORTADA
+}
+
+enum TipoSensor {
+    CAMERA
+    TEMPERATURA
+    UMIDADE
+    NDVI
+}
+
+enum Papel {
+    ADMINISTRADOR
+    OPERADOR
+}
+
+'==========================
+' Pacote Modelo
+'==========================
+package model {
+
+    interface Identificavel {
+        + obterId(): Long
+    }
+
+    interface Autorizavel {
+        + possuiPapel(p:Papel): boolean
+    }
+
+    interface FornecedorDeSensores {
+        + listarSensores(): List<TipoSensor>
+    }
+
+    abstract class EntidadeBase {
+        - id: Long
+        + obterId(): Long
+        + definirId(id:Long)
+    }
+
+    abstract class Sensor extends EntidadeBase {
+        - tipo: TipoSensor
+        - numeroSerial: String
+        + ler(): String
+        + autoVerificacao(): boolean
+    }
+
+    class SensorCamera extends Sensor
+    class SensorTemperatura extends Sensor
+    class SensorUmidade extends Sensor
+
+    class Drone extends EntidadeBase {
+        - codigoDrone: String
+        - estado: EstadoDrone
+        - bateriaPercentual: int
+        - sensores: List<Sensor>
+        + verificarPronto(bateriaMinima:int): boolean
+        + marcarManutencao(motivo:String)
+        + listarSensores(): List<TipoSensor>
+    }
+
+    class Area extends EntidadeBase {
+        - nome: String
+        - tamanhoHectares: double
+        - localizacaoGeoJson: String
+        - tipoCultivo: String
+        + calcularCobertura(): double
+    }
+
+    class Usuario extends EntidadeBase {
+        - nomeUsuario: String
+        - hashSenha: String
+        - papel: Papel
+        + possuiPapel(p:Papel): boolean
+    }
+
+    class Missao extends EntidadeBase {
+        - nome: String
+        - drone: Drone
+        - area: Area
+        - inicioAgendado: LocalDateTime
+        - fimAgendado: LocalDateTime
+        - sensoresSolicitados: List<TipoSensor>
+        - estado: EstadoMissao
+        - criadaPor: Usuario
+        + validar(): boolean
+        + sobrepoeCom(m:Missao): boolean
+    }
+
+    class DadoSensor extends EntidadeBase {
+        - missao: Missao
+        - tipoSensor: TipoSensor
+        - valor: String
+        - registradoEm: LocalDateTime
+    }
+}
+
+'==========================
+' Relacionamentos
+'==========================
+Drone "1" *-- "0..*" Sensor
+Missao "1" --> "1" Drone
+Missao "1" --> "1" Area
+Missao "1" --> "1" Usuario
+Missao "1" --> "0..*" DadoSensor
+DadoSensor "*" --> "1" TipoSensor
+
+@enduml

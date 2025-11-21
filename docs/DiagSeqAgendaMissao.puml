@@ -1,0 +1,61 @@
+@startuml class
+title Diagrama de Sequência – Agendar Missão (com Segurança Integrada)
+
+actor Operador
+participant "API:ControladorMissao" as API
+participant "Servico:AgendadorDeMissoes" as Agendador
+participant "Servico:ServicoDeSeguranca" as Seguranca
+participant "Servico:ServicoDeDrone" as DroneServico
+participant "Repositorio:MissaoRepositorio" as MissaoRepo
+participant "Repositorio:DroneRepositorio" as DroneRepo
+participant "Checklist" as Checklist
+
+== Início: solicitação de agendamento ==
+Operador -> API: POST /missoes {missaoDTO, token}
+activate API
+
+API -> Seguranca: autorizar(token, OPERADOR) 
+activate Seguranca
+Seguranca --> API: ok / erro
+deactivate Seguranca
+
+API -> Agendador: agendarMissao(missaoDTO, usuario)
+activate Agendador
+
+Agendador -> DroneServico: obterDronePorId(droneId)
+activate DroneServico
+DroneServico -> DroneRepo: buscarPorId(droneId)
+activate DroneRepo
+DroneRepo --> DroneServico: Drone
+deactivate DroneRepo
+DroneServico --> Agendador: Drone
+deactivate DroneServico
+
+Agendador -> Checklist: construirParaDrone(Drone)
+activate Checklist
+Checklist -> Checklist: validar()
+Checklist --> Agendador: checklistOk
+deactivate Checklist
+
+Agendador -> MissaoRepo: buscarSobreposicoes(droneId, inicio, fim)
+activate MissaoRepo
+MissaoRepo --> Agendador: []
+deactivate MissaoRepo
+
+alt pré-voo OK & sem sobreposição
+  Agendador -> MissaoRepo: salvar(missao)
+  activate MissaoRepo
+  MissaoRepo --> Agendador: idMissao
+  deactivate MissaoRepo
+
+  Agendador --> API: sucesso {idMissao}
+  deactivate Agendador
+  API --> Operador: 201 Criado
+else sobreposição ou falha no pré-voo
+  Agendador --> API: erro(motivo)
+  deactivate Agendador
+  API --> Operador: 409 / 400
+end
+
+deactivate API
+@enduml
