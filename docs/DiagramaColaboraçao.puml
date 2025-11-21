@@ -1,0 +1,39 @@
+@startuml
+title Diagrama de Colaboração – Agendar Missão
+
+left to right direction
+
+' ===== OBJETOS =====
+object Operador
+object ControladorMissao
+object ServicoDeSeguranca
+object AgendadorDeMissao
+object ServicoDeDrone
+object RepositorioDeMissao
+object Checklist
+
+' ===== POSIÇÃO MANUAL (EVITAR SOBREPOSIÇÃO) =====
+Operador -[hidden]-> ControladorMissao
+ControladorMissao -[hidden]-> ServicoDeSeguranca
+ServicoDeSeguranca -[hidden]-> AgendadorDeMissao
+AgendadorDeMissao -[hidden]-> ServicoDeDrone
+ServicoDeDrone -[hidden]-> RepositorioDeMissao
+RepositorioDeMissao -[hidden]-> Checklist
+
+' ===== LIGAÇÕES (RELACIONAMENTOS) =====
+Operador -- ControladorMissao
+ControladorMissao -- ServicoDeSeguranca
+ControladorMissao -- AgendadorDeMissao
+AgendadorDeMissao -- ServicoDeDrone
+AgendadorDeMissao -- RepositorioDeMissao
+AgendadorDeMissao -- Checklist
+
+' ===== MENSAGENS =====
+ControladorMissao -> ServicoDeSeguranca : autorizar(token)
+ControladorMissao -> AgendadorDeMissao : agendarMissao(dto, usuario)
+AgendadorDeMissao -> ServicoDeDrone : obterDrone(droneId)
+AgendadorDeMissao -> RepositorioDeMissao : buscarSobreposicoes()
+AgendadorDeMissao -> Checklist : validar()
+AgendadorDeMissao -> RepositorioDeMissao : salvar(missao)
+
+@enduml
