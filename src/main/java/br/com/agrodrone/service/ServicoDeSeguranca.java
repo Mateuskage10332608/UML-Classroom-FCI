@@ -7,7 +7,7 @@ import br.com.agrodrone.domain.enums.Papel;
  */
 public class ServicoDeSeguranca {
     public boolean autorizar(String token, Papel papelEsperado) {
-        if (token == null || token.isBlank()) {
+        if (token == null || token.trim().isEmpty()) {
             return false;
         }
         String[] partes = token.split(":");
