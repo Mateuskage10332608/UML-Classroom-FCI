@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.domain;
+package br.com.agrodrone.domain;
 
 
 /**

@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.domain.enums;
+package br.com.agrodrone.domain.enums;
 
 /**
  * Eventos possíveis que podem ocorrer no ciclo de vida de um drone.

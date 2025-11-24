@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.domain.enums;
+package br.com.agrodrone.domain.enums;
 
 /**
  * Tipos de sensores instaláveis em drones.

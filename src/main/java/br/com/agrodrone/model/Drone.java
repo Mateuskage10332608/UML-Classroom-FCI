@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.model;
+package br.com.agrodrone.model;
 
 import java.util.ArrayList;
 import java.util.Collections;

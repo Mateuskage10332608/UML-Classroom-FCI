@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.model;
+package br.com.agrodrone.model;
 
 import java.util.List;
 import br.com.agrodrone.domain.enums.TipoSensor;

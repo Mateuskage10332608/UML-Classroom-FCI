@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.service;
+package br.com.agrodrone.service;
 
 import br.com.agrodrone.domain.Drone;
 import br.com.agrodrone.repository.DroneRepositorio;

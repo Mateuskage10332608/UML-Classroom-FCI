@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.service;
+package br.com.agrodrone.service;
 
 import br.com.agrodrone.domain.enums.EstadoMissao;
 import br.com.agrodrone.domain.enums.EventoMissao;

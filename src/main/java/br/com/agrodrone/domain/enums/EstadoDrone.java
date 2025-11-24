@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.domain.enums;
+package br.com.agrodrone.domain.enums;
 
 /**
  * Estados de um drone conforme o diagrama de estados UML.

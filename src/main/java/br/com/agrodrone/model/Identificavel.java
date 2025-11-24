@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.model;
+package br.com.agrodrone.model;
 
 /**
  * Interface que define que uma entidade possui um identificador único.

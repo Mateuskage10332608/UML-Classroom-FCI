@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.model;
+package br.com.agrodrone.model;
 
 /**
  * Representa uma área agrícola monitorada.

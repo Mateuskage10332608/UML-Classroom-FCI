@@ -5,7 +5,8 @@ import br.com.agrodrone.domain.enums.StatusDrone;
 /**
  * Representa um drone utilizado nas missões de monitoramento.
  */
-public class Drone {
+public class Drone implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private int id;
     private String modelo;
     private StatusDrone status;

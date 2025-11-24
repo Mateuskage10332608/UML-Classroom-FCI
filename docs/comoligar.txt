@@ -1,0 +1,8 @@
+cd /workspaces/UML-Classroom-FCI
+
+chmod +x aplicar_persistencia_completa.sh
+./aplicar_persistencia_completa.sh
+
+mkdir -p out
+javac -encoding UTF-8 -d out $(find src/main/java -name '*.java')
+java -cp out br.com.agrodrone.Main

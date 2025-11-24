@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.domain.enums;
+package br.com.agrodrone.domain.enums;
 
 /**
  * Eventos que alteram o estado de uma missão.

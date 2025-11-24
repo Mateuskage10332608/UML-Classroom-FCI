@@ -1,9 +1,13 @@
 package br.com.agrodrone.domain;
 
+import java.io.Serializable;
+
 /**
  * Define uma área agrícola monitorada pela cooperativa.
  */
-public class AreaAgricola {
+public class AreaAgricola implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String localizacao;
     private double tamanho;       // em hectares

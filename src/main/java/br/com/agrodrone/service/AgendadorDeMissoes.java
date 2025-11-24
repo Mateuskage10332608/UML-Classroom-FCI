@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.service;
+package br.com.agrodrone.service;
 
 import java.time.LocalDateTime;
 import java.util.List;

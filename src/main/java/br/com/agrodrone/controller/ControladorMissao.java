@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.controller;
+package br.com.agrodrone.controller;
 
 import br.com.agrodrone.domain.Operador;
 import br.com.agrodrone.domain.enums.Papel;

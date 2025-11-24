@@ -1,4 +1,4 @@
-﻿package br.com.agrodrone.model;
+package br.com.agrodrone.model;
 
 import java.time.LocalDateTime;
 import br.com.agrodrone.domain.enums.TipoSensor;
