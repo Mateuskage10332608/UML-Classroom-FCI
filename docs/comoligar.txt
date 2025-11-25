@@ -1,4 +1,5 @@
-
-find src/main/java -name '*.java' -print0 | xargs -0 sed -i '1s/^\xEF\xBB\xBF//' && \
-rm -rf out && mkdir -p out && \
+mkdir -p out 
 javac -encoding UTF-8 -d out $(find src/main/java -name '*.java')
+
+# Cria a pasta Out, compila todos os .java do projeto em UTF-8 gera os .class dentro de out
+
